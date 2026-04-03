@@ -78,35 +78,83 @@ const LS={
 };
 
 const QB={
+  "AI / ML":{
+    q:[
+      "What specific part of your pipeline contributes most to performance gain — and how did you validate it?",
+      "How does your model behave under edge cases or unseen data (distribution shift)?",
+      "What trade-offs did you make between accuracy, latency, and cost?"
+    ],
+    r:[
+      "Using pre-trained APIs (e.g. OpenAI) with no customisation or reasoning about why",
+      "No clarity on dataset quality, bias, or preprocessing steps",
+      "Metrics shown without any baseline comparison"
+    ],
+    p:"Every strong ML project knows exactly where its model breaks — ask them to show you a failure case."
+  },
   "IoT":{
-    q:["Walk me through end-to-end data flow — sensor to decision. What at each layer?","What protocol and why over LoRa, Zigbee, or BLE?","How does it behave when network drops? Show offline/edge logic.","What is power consumption and realistic battery life in deployment?","How do you handle sensor calibration drift?","Security model — auth, encryption, OTA updates?","1,000 unit deployment cost — walk me through your BOM."],
-    r:["Demo only on local WiFi — no field deployment data","Cannot explain what happens when a node loses connectivity","Power tested on bench only","No security model — firmware unencrypted"],
-    p:"Push on real-world failure modes — sensor drift, connectivity loss, power budgets in field."
+    q:[
+      "What happens if connectivity is lost — does your system degrade gracefully?",
+      "Why did you choose this hardware stack over alternatives?",
+      "What is your power consumption strategy for real-world deployment?"
+    ],
+    r:[
+      "Prototype works only under ideal demo conditions — not tested in the field",
+      "No consideration for latency, reliability, or power budget",
+      "Hardware used just for display, not integrated meaningfully into the solution"
+    ],
+    p:"Push on real-world failure modes — what happens when the network drops or the battery runs low?"
   },
   "Drone Technology":{
-    q:["Demonstrate a failure scenario — noisy sensor input?","How does autonomy handle edge cases not in training?","Obstacle avoidance latency — detect to react, how benchmarked?","Walk through safety kill-switch and fail-safe architecture.","Regulatory compliance — DGCA approvals, geofencing?","Localization accuracy indoors vs outdoors without GPS?","Onboard vs offboard compute — latency implications?"],
-    r:["No fail-safe — safety assumed not engineered","Only tested in lab, no real-world trials","Unaware of regulatory requirements","Autonomy breaks with simple unexpected obstacle"],
-    p:"Test safety — simulate a sensor failure live and show what the system does."
-  },
-  "AI / ML":{
-    q:["Accuracy on a held-out test set it has NEVER seen?","How did you handle class imbalance, data leakage, overfitting?","Performance on adversarial or out-of-distribution inputs?","Full ML pipeline — collection, labeling, training, validation, deployment?","Dataset size and real-world diversity assurance?","Inference latency and compute cost at production scale?","How do you detect and handle model drift post-deployment?"],
-    r:["Accuracy on training data, not a test set","Dataset under 500 samples or unrepresentative","Cannot explain why the model makes specific predictions","No plan for monitoring or retraining"],
-    p:"Ask them to show the model failing — every strong ML project knows where it breaks."
-  },
-  "Other Innovations":{
-    q:["Measurable impact — CO₂ saved, energy generated, waste reduced?","Lifecycle cost vs the status quo it replaces?","Economic payback period for an end user?","Performance under variable conditions — weather, seasons?","Durability and maintenance cost over 5–10 years?","Life Cycle Assessment conducted or referenced?","First buyer and regulatory pathway?"],
-    r:["Environmental claims with no measurement methodology","Works only under ideal conditions","Economic model ignores total cost of ownership","No LCA — may cost more environmentally than it saves"],
-    p:"Challenge every impact number — ask for methodology behind each metric."
+    q:[
+      "How does your system handle real-world uncertainties — wind, obstacles, GPS failure?",
+      "What safety mechanisms are in place if something goes wrong mid-flight?",
+      "What is your control logic — fully autonomous or is there a manual fallback?"
+    ],
+    r:[
+      "No safety or fail-safe mechanisms designed — assumes everything works",
+      "Simulation only — no real-world flight or field validation performed",
+      "Overfocus on the drone hardware itself with no clear use-case value delivered"
+    ],
+    p:"Simulate a failure live — how the system responds to uncertainty separates real engineering from a demo."
   },
   "Vibe Coding":{
-    q:["Real users beyond your team? Show usage analytics.","Architecture under 10x load — will it hold?","Data privacy and compliance handling?","Customer acquisition cost and churn from beta?","Key user workflow live with data entered right now.","Authentication and vulnerability handling?","Monetization model — have users committed to pay?"],
-    r:["No real users — only internal testing","Single server, no redundancy or scaling","No privacy policy despite handling user data","Demo uses pre-seeded data — breaks with fresh input"],
-    p:"See it work with data entered live — the gap between demo and reality is where apps fail."
+    q:[
+      "Which parts of this system did you design versus generate using AI tools?",
+      "How would you debug this if the system breaks in production right now?",
+      "What architectural decisions did you consciously make — and why?"
+    ],
+    r:[
+      "Entire application is AI-generated with no understanding of what it does",
+      "Cannot explain the code flow or data flow through the system",
+      "No ability to modify, extend, or fix the system independently"
+    ],
+    p:"Separate prompting from real engineering — can they defend every decision, even the AI-generated parts?"
+  },
+  "Other Innovations":{
+    q:[
+      "Why does this problem matter — and who specifically will pay or use this solution?",
+      "What makes your solution 10x better than existing alternatives already in the market?",
+      "What is the hardest part to scale in your solution — and how will you address it?"
+    ],
+    r:[
+      "Problem statement is vague or has not been validated with real potential users",
+      "Solution already exists with no meaningful differentiation or unique insight",
+      "Over-polished UI or demo but no real underlying functionality"
+    ],
+    p:"When did they last speak to a real potential user? Genuine problem discovery separates strong innovations."
   },
   "_fallback_open":{
-    q:["Specific problem and who experiences it most?","How did you validate this problem before building?","What alternatives exist and what makes yours better?","Most important technical innovation?","How does it work outside the demo — what breaks first?","Path from prototype to deployment in 12 months?","What would you change with 6 more months and ₹5 lakhs?"],
-    r:["Problem vague — no measurable pain point","No competitive analysis","Works only under demo conditions","No clear user defined"],
-    p:"Ask when they last spoke to a potential user — genuine research separates strong projects."
+    q:[
+      "Why does this problem matter — and who specifically will use it?",
+      "What makes your solution better than existing alternatives?",
+      "What is the hardest part to scale — and how will you address it?"
+    ],
+    r:[
+      "Problem vague or not validated with real users",
+      "Idea already exists with no differentiation",
+      "Over-polished demo but no real functionality"
+    ],
+    p:"When did they last speak to a real potential user?"
   }
 };
 const gQB=c=>QB[c]||QB["Other Innovations"]||QB["_fallback_open"]||Object.values(QB)[4];
