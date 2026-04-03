@@ -18,6 +18,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .fi{animation:fi .25s ease forwards}
 #root{max-width:600px;margin:0 auto;min-height:100vh}
+
 </style>
 </head>
 <body>
@@ -167,11 +168,11 @@ function xCSV(teams,expo){
 }
 
 // ── Shared UI ─────────────────────────────────────────────────────────────────
-const Crd=({ch,s={},onClick})=><div onClick={onClick} style={{background:CD,border:`1px solid ${BD}`,borderRadius:"10px",padding:"14px",cursor:onClick?"pointer":"default",...s}}>{ch}</div>;
+const Crd=({ch,s={},onClick})=><div data-card onClick={onClick} style={{background:CD,border:`1px solid ${BD}`,borderRadius:"10px",padding:"14px",cursor:onClick?"pointer":"default",...s}}>{ch}</div>;
 const Lbl=({ch,c=A})=><div style={{fontSize:"9px",color:c,letterSpacing:"2px",marginBottom:"6px",fontWeight:"bold"}}>{ch}</div>;
-const Fi=({s={},...p})=><input style={{width:"100%",background:"#090b12",border:`1px solid ${BD}`,borderRadius:"6px",padding:"10px 12px",color:TX,fontSize:"13px",outline:"none",boxSizing:"border-box",...s}} {...p}/>;
-const Fta=({s={},...p})=><textarea style={{width:"100%",background:"#090b12",border:`1px solid ${BD}`,borderRadius:"6px",padding:"10px 12px",color:TX,fontSize:"13px",outline:"none",resize:"vertical",boxSizing:"border-box",...s}} {...p}/>;
-const Fsl=({ch,s={},...p})=><select style={{width:"100%",background:"#090b12",border:`1px solid ${BD}`,borderRadius:"6px",padding:"10px 12px",color:TX,fontSize:"13px",outline:"none",boxSizing:"border-box",...s}} {...p}>{ch}</select>;
+const Fi=({s={},...p})=><input data-inp style={{width:"100%",background:"#090b12",border:`1px solid ${BD}`,borderRadius:"6px",padding:"10px 12px",color:TX,fontSize:"13px",outline:"none",boxSizing:"border-box",...s}} {...p}/>;
+const Fta=({s={},...p})=><textarea data-inp style={{width:"100%",background:"#090b12",border:`1px solid ${BD}`,borderRadius:"6px",padding:"10px 12px",color:TX,fontSize:"13px",outline:"none",resize:"vertical",boxSizing:"border-box",...s}} {...p}/>;
+const Fsl=({ch,s={},...p})=><select data-inp style={{width:"100%",background:"#090b12",border:`1px solid ${BD}`,borderRadius:"6px",padding:"10px 12px",color:TX,fontSize:"13px",outline:"none",boxSizing:"border-box",...s}} {...p}>{ch}</select>;
 function Btn({ch,onClick,loading,disabled,s={},v="primary",full}){
   const bg=v==="primary"?A:v==="green"?GR:v==="danger"?RD:"transparent";
   const co=v==="outline"?A:v==="danger"?"#fff":"#000";
@@ -200,12 +201,19 @@ function TeamImport({cats,onImport}){
   const fileRef=useRef(null);
 
   function autoMap(hdrs){
-    const lc=h=>h.toLowerCase();
-    const find=(...keys)=>hdrs.find(h=>keys.some(k=>lc(h).includes(k)))||"";
+    const norm=h=>h.toLowerCase().replace(/[^a-z0-9]/g,"");
+    const find=(...keys)=>{
+      // Priority 1: exact normalised match
+      let m=hdrs.find(h=>keys.some(k=>norm(h)===norm(k)));
+      if(m)return m;
+      // Priority 2: header contains any key (normalised)
+      m=hdrs.find(h=>keys.some(k=>norm(h).includes(norm(k))||norm(k).includes(norm(h))));
+      return m||"";
+    };
     return {
-      name:find("team","project","name","title","stall"),
-      cat: find("cat","category","track","domain","type","stream"),
-      desc:find("desc","description","abstract","summary","about","idea")
+      name:find("team_name","teamname","team name","project_name","projectname","project name","team","project","name","title","stall"),
+      cat: find("selected_technology","selectedtechnology","technology","tech","cat","category","track","domain","type","stream"),
+      desc:find("description","desc","project_description","projectdescription","abstract","summary","about","idea","details")
     };
   }
 
@@ -846,6 +854,7 @@ function App(){
   const [teams,setTmsRaw]=useState(()=>LS.g("hfj_teams",[]));
   const [screen,sSc]=useState("info");
   const [aid,sAid]=useState(null);
+
   const [apiKey,sApiKey]=useState(()=>{const k=LS.g("hfj_apikey","");if(k)sKey(k);return k;});
   const [expo,setExpo]=useState(()=>{const saved=LS.g("hfj_expo",null);return saved&&(saved.expoName||saved.logo)?saved:{expoName:"HACKFUSION-2K26",logo:DEFAULT_LOGO};});
   const [customCats,setCustomCats]=useState(()=>LS.g("hfj_cats",[]));
@@ -880,12 +889,12 @@ function App(){
       </div>
       <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
         {teams.length>0&&<div style={{fontSize:"9px",textAlign:"right"}}><div style={{color:A}}>{v}/{teams.length} visited</div><div style={{color:GR}}>{f} final</div></div>}
-        <div style={{width:"8px",height:"8px",borderRadius:"50%",background:apiKey?GR:A,boxShadow:"0 0 6px "+(apiKey?GR:A)}}/>
+<div style={{width:"8px",height:"8px",borderRadius:"50%",background:apiKey?GR:A,boxShadow:"0 0 6px "+(apiKey?GR:A)}}/>
       </div>
     </div>
 
     <div style={{display:"flex",background:CD,borderBottom:"1px solid "+BD,position:"sticky",top:"58px",zIndex:49,overflowX:"auto"}}>
-      {NAV.map(n=><button key={n.id} onClick={()=>{sSc(n.id);if(n.id!=="judge")sAid(null);}} style={{flex:1,padding:"12px 4px",border:"none",cursor:"pointer",background:screen===n.id?"#131a2e":"transparent",color:screen===n.id?A:DIM,fontFamily:"'Courier New',monospace",fontSize:"10px",fontWeight:screen===n.id?"bold":"normal",borderBottom:screen===n.id?"2px solid "+A:"2px solid transparent",transition:"all .2s",textAlign:"center"}}>
+      {NAV.map(n=><button data-navbtn key={n.id} onClick={()=>{sSc(n.id);if(n.id!=="judge")sAid(null);}} style={{flex:1,padding:"12px 4px",border:"none",cursor:"pointer",background:screen===n.id?"#131a2e":"transparent",color:screen===n.id?A:DIM,fontFamily:"'Courier New',monospace",fontSize:"10px",fontWeight:screen===n.id?"bold":"normal",borderBottom:screen===n.id?"2px solid "+A:"2px solid transparent",transition:"all .2s",textAlign:"center"}}>
         <div style={{fontSize:"15px"}}>{n.i}</div>{n.l}
       </button>)}
     </div>
