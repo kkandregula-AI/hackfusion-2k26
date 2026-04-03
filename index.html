@@ -199,21 +199,26 @@ function TeamImport({cats,onImport}){
   const [gUrl,setGUrl]=useState("");
   const [loading,setLoading]=useState(false);
   const fileRef=useRef(null);
+  // Pre-configured column name hints — user sets these before uploading
+  const [colHints,setColHints]=useState(()=>LS.g("hfj_colhints",{name:"team_name",cat:"selected_technology",desc:"description"}));
+  const saveHints=hints=>{setColHints(hints);LS.s("hfj_colhints",hints);};
 
   function autoMap(hdrs){
     const norm=h=>h.toLowerCase().replace(/[^a-z0-9]/g,"");
     const find=(...keys)=>{
-      // Priority 1: exact normalised match
       let m=hdrs.find(h=>keys.some(k=>norm(h)===norm(k)));
       if(m)return m;
-      // Priority 2: header contains any key (normalised)
       m=hdrs.find(h=>keys.some(k=>norm(h).includes(norm(k))||norm(k).includes(norm(h))));
       return m||"";
     };
+    // User-configured hints come first — highest priority
+    const nameHint=colHints.name.trim();
+    const catHint=colHints.cat.trim();
+    const descHint=colHints.desc.trim();
     return {
-      name:find("team_name","teamname","team name","project_name","projectname","project name","team","project","name","title","stall"),
-      cat: find("selected_technology","selectedtechnology","technology","tech","cat","category","track","domain","type","stream"),
-      desc:find("description","desc","project_description","projectdescription","abstract","summary","about","idea","details")
+      name:find(...[nameHint,"team_name","teamname","team name","project_name","projectname","project name","team","project","name","title","stall"].filter(Boolean)),
+      cat: find(...[catHint,"selected_technology","selectedtechnology","technology","tech","cat","category","track","domain","type","stream"].filter(Boolean)),
+      desc:find(...[descHint,"description","desc","project_description","projectdescription","abstract","summary","about","idea","details"].filter(Boolean))
     };
   }
 
@@ -352,6 +357,49 @@ function TeamImport({cats,onImport}){
       <div style={{fontSize:"10px",color:DIM,marginBottom:"12px",lineHeight:"1.7"}}>
         Upload an Excel / CSV file <strong style={{color:TX}}>or</strong> paste a public Google Sheets URL.<br/>
         Columns are auto-detected. Existing teams are kept — import only adds new ones.
+      </div>
+
+      {/* ── Column Name Configuration ── */}
+      <div style={{background:"#090b12",border:`1px solid ${A}40`,borderRadius:"8px",padding:"12px",marginBottom:"14px"}}>
+        <div style={{fontSize:"9px",color:A,letterSpacing:"2px",fontWeight:"bold",marginBottom:"10px"}}>⚙ SET YOUR EXCEL COLUMN NAMES</div>
+        <div style={{fontSize:"10px",color:DIM,marginBottom:"10px",lineHeight:"1.6"}}>
+          Enter the exact column header names from your Excel sheet. The app will look for these first when mapping data.
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
+          <div>
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:"3px"}}>
+              <span style={{fontSize:"10px",color:A}}>Team / Project Name column <span style={{color:RD}}>*</span></span>
+              <span style={{fontSize:"9px",color:DIM}}>required</span>
+            </div>
+            <Fi value={colHints.name}
+              onChange={e=>saveHints({...colHints,name:e.target.value})}
+              placeholder="e.g. team_name"
+              s={{fontSize:"12px"}}/>
+          </div>
+          <div>
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:"3px"}}>
+              <span style={{fontSize:"10px",color:BL}}>Category column</span>
+              <span style={{fontSize:"9px",color:DIM}}>optional</span>
+            </div>
+            <Fi value={colHints.cat}
+              onChange={e=>saveHints({...colHints,cat:e.target.value})}
+              placeholder="e.g. selected_technology"
+              s={{fontSize:"12px"}}/>
+          </div>
+          <div>
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:"3px"}}>
+              <span style={{fontSize:"10px",color:GR}}>Description column</span>
+              <span style={{fontSize:"9px",color:DIM}}>optional</span>
+            </div>
+            <Fi value={colHints.desc}
+              onChange={e=>saveHints({...colHints,desc:e.target.value})}
+              placeholder="e.g. description"
+              s={{fontSize:"12px"}}/>
+          </div>
+        </div>
+        <div style={{marginTop:"8px",padding:"7px 10px",background:"#07090e",borderRadius:"6px",fontSize:"9px",color:DIM,lineHeight:"1.6"}}>
+          💾 Saved automatically · Used as first-priority when detecting columns after upload
+        </div>
       </div>
 
       {/* File upload */}
