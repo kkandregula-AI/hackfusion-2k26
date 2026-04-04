@@ -158,6 +158,8 @@ const QB={
   }
 };
 const gQB=c=>QB[c]||QB["Other Innovations"]||QB["_fallback_open"]||Object.values(QB)[4];
+// Show category name — preserve original, just trim excess whitespace
+const showCat=c=>(c||"").trim();
 
 let _key="";
 const sKey=k=>{_key=k?k.trim():"";};
@@ -194,7 +196,7 @@ function xPDF(teams,expo){
     const rows=ck.map((k,ci)=>`<tr style="border-bottom:1px solid #f1f5f9"><td style="padding:6px 8px;color:${cc[ci]};font-weight:600">${cl[ci]}</td><td style="padding:6px 8px;text-align:center;color:#64748b">${cw[ci]}%</td><td style="padding:6px 8px;text-align:center;font-weight:bold;color:#f59e0b">${t.manualScores[k]||0}</td><td style="padding:6px 8px;text-align:center;font-weight:bold;color:#2563eb">${t.aiScores?t.aiScores[k]||0:"—"}</td><td style="padding:6px 8px;text-align:center;font-weight:bold;color:#16a34a;background:#f0fdf4">${t.finalScores?t.finalScores[k]||0:"—"}</td></tr>`).join("");
     return `<div style="break-inside:avoid;margin-bottom:20px;border:1px solid #d1d5db;border-radius:10px;overflow:hidden"><div style="background:${i===0?"#1e1b4b":i===1?"#1e3a5f":"#1a2530"};padding:12px 16px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:14px;font-weight:bold;color:#fff">${MD[i]||"#"+(i+1)} ${t.name}</div><div style="font-size:10px;color:#94a3b8">${t.cat}</div></div><div style="text-align:right"><div style="font-size:28px;font-weight:bold;color:#f59e0b">${wt(t.finalScores)}</div><div style="font-size:10px;color:#64748b">/10</div></div></div><div style="padding:12px 16px;background:#fff"><table style="width:100%;border-collapse:collapse;margin-bottom:10px;font-size:11px"><thead><tr style="background:#f8fafc"><th style="padding:6px 8px;text-align:left;border-bottom:2px solid #e2e8f0">Criterion</th><th style="padding:6px 8px;text-align:center;border-bottom:2px solid #e2e8f0">Wt</th><th style="padding:6px 8px;text-align:center;border-bottom:2px solid #e2e8f0;color:#f59e0b">Manual</th><th style="padding:6px 8px;text-align:center;border-bottom:2px solid #e2e8f0;color:#2563eb">AI</th><th style="padding:6px 8px;text-align:center;border-bottom:2px solid #e2e8f0;color:#16a34a;background:#f0fdf4">Final</th></tr></thead><tbody>${rows}</tbody></table>${t.aiAnalysis?`<div style="background:#eff6ff;border-left:4px solid #2563eb;padding:8px 10px;font-size:11px;color:#1e40af;margin-bottom:8px"><strong>AI: </strong>${t.aiAnalysis}</div>`:""}</div></div>`;
   }).join("");
-  const sumRows=ranked.map((t,i)=>`<tr style="background:${i%2===0?"#f8fafc":"#fff"};border-bottom:1px solid #e2e8f0"><td style="padding:9px 10px;font-size:16px">${MD[i]||"#"+(i+1)}</td><td style="padding:9px 10px;font-weight:bold">${t.name}</td><td style="padding:9px 10px;color:#475569;font-size:10px">${t.cat.split("/")[0].trim()}</td><td style="padding:9px 10px;text-align:center;color:#f59e0b;font-weight:bold">${wt(t.manualScores)||"—"}</td><td style="padding:9px 10px;text-align:center;color:#2563eb;font-weight:bold">${t.aiScores?wt(t.aiScores):"—"}</td><td style="padding:9px 10px;text-align:center;font-size:16px;font-weight:bold;color:${i===0?"#f59e0b":i===1?"#94a3b8":i===2?"#b45309":"#0f172a"}">${wt(t.finalScores)}</td><td style="padding:9px 10px;text-align:center"><span style="font-size:9px;padding:2px 7px;border-radius:10px;background:${t.finalized?"#dcfce7":"#fef9c3"};color:${t.finalized?"#16a34a":"#ca8a04"}">${t.finalized?"FINAL":"SCORED"}</span></td></tr>`).join("");
+  const sumRows=ranked.map((t,i)=>`<tr style="background:${i%2===0?"#f8fafc":"#fff"};border-bottom:1px solid #e2e8f0"><td style="padding:9px 10px;font-size:16px">${MD[i]||"#"+(i+1)}</td><td style="padding:9px 10px;font-weight:bold">${t.name}</td><td style="padding:9px 10px;color:#475569;font-size:10px">${showCat(t.cat)}</td><td style="padding:9px 10px;text-align:center;color:#f59e0b;font-weight:bold">${wt(t.manualScores)||"—"}</td><td style="padding:9px 10px;text-align:center;color:#2563eb;font-weight:bold">${t.aiScores?wt(t.aiScores):"—"}</td><td style="padding:9px 10px;text-align:center;font-size:16px;font-weight:bold;color:${i===0?"#f59e0b":i===1?"#94a3b8":i===2?"#b45309":"#0f172a"}">${wt(t.finalScores)}</td><td style="padding:9px 10px;text-align:center"><span style="font-size:9px;padding:2px 7px;border-radius:10px;background:${t.finalized?"#dcfce7":"#fef9c3"};color:${t.finalized?"#16a34a":"#ca8a04"}">${t.finalized?"FINAL":"SCORED"}</span></td></tr>`).join("");
   const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${expo.expoName||"HackFusion 2026"} Results</title><style>*{box-sizing:border-box}body{font-family:Arial,sans-serif}@media print{.np{display:none!important}}@page{margin:12mm;size:A4}.pb{position:fixed;top:12px;right:12px;background:#f59e0b;color:#000;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-weight:bold}</style></head><body><button class="pb np" onclick="window.print()">🖨 Print / Save PDF</button><div style="max-width:780px;margin:0 auto;padding:20px"><div style="text-align:center;margin-bottom:24px;padding:20px;background:linear-gradient(135deg,#07090e,#0a0f1e);border-radius:10px;color:#fff">${logoHtml}<div style="font-size:9px;letter-spacing:4px;color:#f59e0b;margin-bottom:4px">${expo.expoName||"HACKFUSION-2K26"} · PROJECT EXPO</div><div style="font-size:24px;font-weight:bold">⚖️ Judge Pro — Results Report</div>${judgeHtml}<div style="font-size:10px;color:#64748b;margin-top:6px">${now} · ${teams.length} teams · ${ranked.length} scored · ${teams.filter(t=>t.finalized).length} finalized</div></div><h2 style="font-size:15px;border-bottom:3px solid #f59e0b;padding-bottom:5px;margin-bottom:14px">📊 Summary</h2><table style="width:100%;border-collapse:collapse;margin-bottom:24px;font-size:11px"><thead><tr style="background:#1e293b;color:#fff"><th style="padding:9px 10px">Rank</th><th style="padding:9px 10px;text-align:left">Team</th><th style="padding:9px 10px;text-align:left">Category</th><th style="padding:9px 10px;text-align:center;color:#fde68a">Manual</th><th style="padding:9px 10px;text-align:center;color:#93c5fd">AI</th><th style="padding:9px 10px;text-align:center;background:#f59e0b;color:#000">Final</th><th style="padding:9px 10px;text-align:center">Status</th></tr></thead><tbody>${sumRows}</tbody></table><h2 style="font-size:15px;border-bottom:3px solid #f59e0b;padding-bottom:5px;margin-bottom:14px">📋 Scorecards</h2>${cards||"<p>No scored teams yet.</p>"}<div style="text-align:center;margin-top:24px;font-size:10px;color:#94a3b8">${footerJudge}HackFusion Judge Pro · Built with Claude AI · Anthropic</div></div></body></html>`;
   const w=window.open("","_blank");
   if(w){w.document.write(html);w.document.close();}else alert("Allow popups to open PDF.");
@@ -316,75 +318,176 @@ function TeamImport({cats,onImport}){
     const imported=rows.map(r=>{
       const name=String(r[ni]||"").trim();if(!name)return null;
       const rawCat=ci>=0?String(r[ci]||"").trim():"";
-      // Smart category matching — handles short labels like "AI/ML", "Software", "IoT" etc.
+      // ── Semantic category matching ────────────────────────────────────────────
+      // Normalise: lowercase, strip punctuation/spaces, so "AI & ML" → "aiml",
+      // "IoT" = "IOT" = "iot", "Drone Technologies" ≈ "Drone Technology" etc.
       const matchCat = (raw, catList) => {
-        if (!raw) return catList[0];
-        const r = raw.toLowerCase().trim();
-        // 1. Exact match
-        let m = catList.find(c => c.toLowerCase() === r);
-        if (m) return m;
-        // 2. Category contains the raw string
-        m = catList.find(c => c.toLowerCase().includes(r));
-        if (m) return m;
-        // 3. Raw string contains any keyword from category
-        m = catList.find(c => c.toLowerCase().split(/[\/\s,&]+/).some(word => word.length > 2 && r.includes(word)));
-        if (m) return m;
-        // 4. Keyword aliases — common shorthand from Excel sheets
-        const aliases = {
-          "ai":       "AI / ML",
-          "ml":       "AI / ML",
-          "nlp":      "AI / ML",
-          "cv":       "AI / ML",
-          "machine":  "AI / ML",
-          "deep":     "AI / ML",
-          "vision":   "AI / ML",
-          "computer": "AI / ML",
-          "data":     "AI / ML",
-          "neural":   "AI / ML",
-          "genai":    "AI / ML",
-          "llm":      "AI / ML",
-          "software": "Vibe Coding",
-          "web":      "Vibe Coding",
-          "mobile":   "Vibe Coding",
-          "app":      "Vibe Coding",
-          "saas":     "Vibe Coding",
-          "vibe":     "Vibe Coding",
-          "code":     "Vibe Coding",
-          "fullstack":"Vibe Coding",
-          "hardware": "IoT",
-          "iot":      "IoT",
-          "embedded": "IoT",
-          "sensor":   "IoT",
-          "smart":    "IoT",
-          "robot":    "Drone Technology",
-          "drone":    "Drone Technology",
-          "uav":      "Drone Technology",
-          "autonomous":"Drone Technology",
-          "aerial":   "Drone Technology",
-          "green":    "Other Innovations",
-          "sustain":  "Other Innovations",
-          "energy":   "Other Innovations",
-          "agro":     "Other Innovations",
-          "farm":     "Other Innovations",
-          "open":     "Other Innovations",
-          "other":    "Other Innovations",
-          "innov":    "Other Innovations",
-          "health":   "Other Innovations",
-          "edu":      "Other Innovations",
-          "finance":  "Other Innovations",
-          "block":    "Other Innovations",
+        if (!raw) return catList[catList.length-1];
+
+        const norm  = s => s.toLowerCase().replace(/[^a-z0-9]/g,"");
+        const words = s => s.toLowerCase().replace(/[^a-z0-9]+/g," ").trim().split(/\s+/).filter(w=>w.length>1);
+        const r     = raw.toLowerCase().trim();
+        const rNorm = norm(raw);
+        const rWords= words(raw);
+
+        // ── Semantic signature table ────────────────────────────────────────
+        // Each entry: { qbKey, signals }
+        // signals = array of normalised token sets. A match fires when ANY
+        // signal's tokens are ALL present in rWords/rNorm.
+        const SIG = [
+          {
+            qbKey: "AI / ML",
+            // Only fire on explicit AI/ML tokens — avoid false positives on "open domain"
+            signals: [
+              ["artificial","intelligence"],
+              ["machine","learning"],
+              ["deep","learning"],
+              ["neural","network"],
+              ["computer","vision"],
+              ["natural","language"],
+              ["generative","ai"],
+              ["data","science"],
+              ["ai","ml"],
+              ["nlp"],
+              ["llm"],
+              ["genai"],
+              ["ml"],
+              ["ai"]
+            ]
+          },
+          {
+            qbKey: "IoT",
+            // IoT wins only when drone is NOT present
+            signals: [
+              ["internet","things"],
+              ["embedded","system"],
+              ["microcontroller"],
+              ["arduino"],
+              ["raspberry"],
+              ["smart","device"],
+              ["hardware","iot"],
+              ["sensor","network"],
+              ["iot"]
+            ]
+          },
+          {
+            qbKey: "Drone Technology",
+            // Drone wins when "drone" appears, even alongside "iot"
+            signals: [
+              ["drone","technolog"],
+              ["drone","tech"],
+              ["iot","drone"],        // "IoT & Drone Technology" → Drone wins
+              ["drone"],              // standalone drone
+              ["uav"],
+              ["unmanned","aerial"],
+              ["quadcopter"],
+              ["multirotor"],
+              ["autonomous","flight"],
+              ["fpv"]
+            ]
+          },
+          {
+            qbKey: "Vibe Coding",
+            signals: [
+              ["vibe","cod"],
+              ["vibe","coding"],
+              ["web","app"],
+              ["mobile","app"],
+              ["fullstack"],
+              ["saas"],
+              ["rapid","build"],
+              ["software","dev"],
+              ["webapp"],
+              ["mobileapp"]
+            ]
+          },
+          {
+            qbKey: "Other Innovations",
+            // Broad catch-all — "open domain", blockchain, health, etc.
+            signals: [
+              ["open","domain"],       // "Open Domain", "Open Domain Source"
+              ["open","innov"],
+              ["other","innov"],
+              ["general","innov"],
+              ["open","source","innov"],
+              ["blockchain"],
+              ["block","chain"],
+              ["crypto"],
+              ["health","tech"],
+              ["healthtech"],
+              ["fintech"],
+              ["fin","tech"],
+              ["agri"],
+              ["sustain"],
+              ["green","tech"],
+              ["social","innov"],
+              ["edu","tech"],
+              ["edtech"],
+              ["other"],
+              ["innov"],
+              ["open"]
+            ]
+          }
+        ];
+
+        // Tie-break rule: if both IoT and Drone have equal scores and raw contains "drone", Drone wins
+        const tieBreak = (scored, rNorm) => {
+          if (scored.length >= 2 && scored[0].score === scored[1].score) {
+            if (rNorm.includes("drone")) {
+              const di = scored.findIndex(s => s.qbKey === "Drone Technology");
+              if (di > 0) { const tmp=scored[0]; scored[0]=scored[di]; scored[di]=tmp; }
+            }
+          }
+          return scored;
         };
-        const aliasMatch = Object.keys(aliases).find(k => r.includes(k));
-        if (aliasMatch) {
-          // If custom cats provided, try to find a similar one there first
-          const customMatch = catList.find(c => c.toLowerCase().includes(aliasMatch));
-          if (customMatch) return customMatch;
-          // Fall back to default alias if it exists in catList
-          const defMatch = catList.find(c => c === aliases[aliasMatch]);
-          if (defMatch) return defMatch;
+
+        // Score each QB category against raw input
+        // Uses WHOLE-WORD token matching to avoid false positives
+        // e.g. "ai" must appear as a standalone word, not inside "domain" or "blockchain"
+        const score = entry => {
+          let best = 0;
+          for (const sig of entry.signals) {
+            const hits = sig.filter(tok => {
+              const tNorm = norm(tok);
+              // Match only if tNorm appears as a complete token in rWords
+              // OR is an exact match of rNorm (single-word inputs)
+              return rWords.some(w => norm(w) === tNorm) || rNorm === tNorm;
+            }).length;
+            const coverage = hits / sig.length;
+            if (coverage > best) best = coverage;
+          }
+          return best;
+        };
+
+        // Build scores for every QB key
+        const scored = SIG.map(e => ({qbKey:e.qbKey, score:score(e)}));
+
+        // Pick the highest-scoring QB key (must be > 0)
+        scored.sort((a,b) => b.score - a.score);
+        tieBreak(scored, rNorm);
+        const winner = scored[0];
+
+        if (winner.score > 0) {
+          // Find the matching cat in catList (exact QB key or closest)
+          const exact = catList.find(c => c === winner.qbKey);
+          if (exact) return exact;
+          // If catList has custom names, pick the one with most token overlap with winner.qbKey
+          const wNorm = norm(winner.qbKey);
+          const byOverlap = catList.map(c => {
+            const cn = norm(c);
+            let overlap = 0;
+            words(c).forEach(w => { if (wNorm.includes(norm(w)) && w.length > 1) overlap++; });
+            return {c, overlap};
+          }).sort((a,b) => b.overlap - a.overlap);
+          if (byOverlap[0].overlap > 0) return byOverlap[0].c;
+          // Fallback: return winner qbKey as label even if not in catList
+          return catList[catList.length-1];
         }
-        // 5. Last resort — Open Category
-        return catList.find(c=>c.toLowerCase().includes('other')||c.toLowerCase().includes('innovation')||c.toLowerCase().includes('open'))||catList[catList.length-1];
+
+        // No signal matched — fall back to last category (Other Innovations)
+        return catList.find(c=>
+          norm(c).includes("other")||norm(c).includes("innov")||norm(c).includes("open")
+        ) || catList[catList.length-1];
       };
       const cat = matchCat(rawCat, cats);
       const desc=di>=0?String(r[di]||"").trim():"";
@@ -623,6 +726,7 @@ function Teams({teams,set,go,cats}){
   const [cat,sCat]=useState(cats[0]);
   const [d,sD]=useState("");
   const [eid,sE]=useState(null);
+  const [search,setSearch]=useState("");
 
   const save=()=>{
     if(!n.trim())return;
@@ -633,11 +737,27 @@ function Teams({teams,set,go,cats}){
 
   const v=teams.filter(t=>t.visited).length,f=teams.filter(t=>t.finalized).length;
 
+  const filteredTeams = search.trim()
+    ? teams.filter(t=>t.name.toLowerCase().includes(search.toLowerCase().trim()))
+    : teams;
+
   return <div className="fi" style={{display:"flex",flexDirection:"column",gap:"12px"}}>
     {teams.length>0&&<div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"8px"}}>
       {[["TOTAL",teams.length,TX],["VISITED",v,A],["DONE",f,GR]].map(([l,n,c])=>
         <Crd key={l} s={{textAlign:"center",padding:"10px"}} ch={<><div style={{fontSize:"24px",fontWeight:"bold",color:c}}>{n}</div><div style={{fontSize:"9px",color:DIM,letterSpacing:"1px"}}>{l}</div></>}/>
       )}
+    </div>}
+    {teams.length>0&&<div style={{position:"relative"}}>
+      <Fi
+        value={search}
+        onChange={e=>setSearch(e.target.value)}
+        placeholder={"🔍 Search teams by name... ("+teams.length+" total)"}
+        s={{paddingRight:"36px",background:"#090b12",border:"1px solid "+(search?A:BD)}}
+      />
+      {search&&<button onClick={()=>setSearch("")} style={{position:"absolute",right:"10px",top:"50%",transform:"translateY(-50%)",background:"none",border:"none",color:DIM,cursor:"pointer",fontSize:"16px",lineHeight:1}}>✕</button>}
+      {search&&<div style={{fontSize:"10px",color:filteredTeams.length>0?A:RD,marginTop:"4px",paddingLeft:"2px"}}>
+        {filteredTeams.length>0?filteredTeams.length+" team"+(filteredTeams.length!==1?"s":"")+" found":"No teams match '"+search+"'"}
+      </div>}
     </div>}
     <Crd s={{borderColor:eid?A+"50":BD}} ch={<div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
       <Lbl ch={eid?"EDIT TEAM":"ADD TEAM / PROJECT"}/>
@@ -652,7 +772,9 @@ function Teams({teams,set,go,cats}){
     {teams.length===0
       ?<div style={{textAlign:"center",color:DIM,padding:"40px 0",fontSize:"13px"}}>Add your first team above, or import from INFO tab →
               After importing, tap ✎ on each team to verify its category is correct!</div>
-      :teams.map((t,i)=>
+      :filteredTeams.length===0&&search.trim()
+        ?<div style={{textAlign:"center",color:DIM,padding:"24px 0",fontSize:"13px"}}>No teams match <strong style={{color:A}}>"{search}"</strong></div>
+        :filteredTeams.map((t,i)=>
         <Crd key={t.id} s={{borderLeft:`3px solid ${t.finalized?GR:t.visited?A:BD}`,cursor:"pointer"}} onClick={()=>go(t.id)} ch={
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:"8px"}}>
             <div style={{flex:1,minWidth:0}}>
@@ -661,7 +783,7 @@ function Teams({teams,set,go,cats}){
                 {t.finalized&&<Pill c={GR} ch={"✓ "+wt(t.finalScores)+"/10"}/>}
                 {t.visited&&!t.finalized&&<Pill c={A} ch="VISITED"/>}
               </div>
-              <div style={{fontSize:"10px",color:DIM}}>{t.cat.split("/")[0].trim()}</div>
+              <div style={{fontSize:"10px",color:DIM}}>{showCat(t.cat)}</div>
             </div>
             <div style={{display:"flex",gap:"5px",flexShrink:0}} onClick={e=>e.stopPropagation()}>
               <Btn s={{padding:"6px 9px",fontSize:"10px"}} ch="JUDGE" onClick={()=>go(t.id)}/>
@@ -707,7 +829,7 @@ function Judge({team,upd,back,apiKey}){
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 14px",background:CD,borderRadius:"10px",border:`1px solid ${A}30`}}>
       <div>
         <div style={{fontSize:"15px",fontWeight:"bold",color:TX}}>{team.name}</div>
-        <div style={{fontSize:"10px",color:DIM}}>{team.cat.split("/")[0].trim()}</div>
+        <div style={{fontSize:"10px",color:DIM}}>{showCat(team.cat)}</div>
       </div>
       <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
         {fT>0&&<div style={{textAlign:"right"}}><div style={{fontSize:"20px",fontWeight:"bold",color:team.finalized?GR:A}}>{fT}</div><div style={{fontSize:"9px",color:DIM}}>/10</div></div>}
@@ -849,7 +971,7 @@ function Results({teams,set,apiKey,go,expo}){
             <span style={{fontSize:"20px",minWidth:"26px"}}>{MD[i]||"#"+(i+1)}</span>
             <div style={{flex:1,minWidth:0}}>
               <div style={{fontWeight:"bold",fontSize:"13px",color:TX}}>{t.name}</div>
-              <div style={{fontSize:"10px",color:DIM}}>{t.cat.split("/")[0].trim()}</div>
+              <div style={{fontSize:"10px",color:DIM}}>{showCat(t.cat)}</div>
             </div>
             <div style={{textAlign:"right"}}>
               <div style={{fontSize:"22px",fontWeight:"bold",color:i===0?A:TX}}>{wt(t.finalScores)}</div>
@@ -1007,7 +1129,7 @@ function App(){
           <Info ch={<>Select a team from <strong style={{color:A}}>TEAMS</strong> and tap JUDGE.</>}/>
           {teams.map(t=><Crd key={t.id} onClick={()=>go(t.id)} s={{cursor:"pointer",borderLeft:"3px solid "+(t.finalized?GR:t.visited?A:BD)}} ch={
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-              <div><div style={{fontWeight:"bold",color:TX}}>{t.name}</div><div style={{fontSize:"10px",color:DIM,marginTop:"2px"}}>{t.cat.split("/")[0].trim()}</div></div>
+              <div><div style={{fontWeight:"bold",color:TX}}>{t.name}</div><div style={{fontSize:"10px",color:DIM,marginTop:"2px"}}>{showCat(t.cat)}</div></div>
               <div style={{display:"flex",alignItems:"center",gap:"8px"}}>{t.finalized&&<Pill c={GR} ch={"✓ "+wt(t.finalScores)}/>}{t.visited&&!t.finalized&&<Pill c={A} ch="VISITED"/>}<span style={{color:DIM,fontSize:"16px"}}>→</span></div>
             </div>
           }/>)}
